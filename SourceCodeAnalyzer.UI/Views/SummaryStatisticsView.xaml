@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="SourceCodeAnalyzer.UI.Views.SummaryStatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" d:Background="White"
+             d:DesignHeight="120" d:DesignWidth="600">
+    <!-- Summary Statistics -->
+    <GroupBox Margin="4" Header="Summary Statistics">
+        <Grid Margin="0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Total Files:" Style="{StaticResource Style.TextBlock.KeyLabel}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalFiles, Converter={StaticResource NumberFormatConverter}}" Style="{StaticResource Style.TextBlock.KeyValue}"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="3" Text="Total Lines:" Style="{StaticResource Style.TextBlock.KeyLabel}"/>
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding TotalLines, Converter={StaticResource NumberFormatConverter}}" Style="{StaticResource Style.TextBlock.KeyValue}"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="6" Text="Source Lines:" Style="{StaticResource Style.TextBlock.KeyLabel}"/>
+            <TextBlock Grid.Row="0" Grid.Column="7" Text="{Binding TotalSourceLines, Converter={StaticResource NumberFormatConverter}}" Style="{StaticResource Style.TextBlock.KeyValue}"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="9" Text="Comment Lines:" Style="{StaticResource Style.TextBlock.KeyLabel}"/>
+            <TextBlock Grid.Row="0" Grid.Column="10" Text="{Binding TotalCommentLines, Converter={StaticResource NumberFormatConverter}}" Style="{StaticResource Style.TextBlock.KeyValue}"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="12" Text="Blank Lines:" Style="{StaticResource Style.TextBlock.KeyLabel}"/>
+            <TextBlock Grid.Row="0" Grid.Column="13" Text="{Binding TotalBlankLines, Converter={StaticResource NumberFormatConverter}}" Style="{StaticResource Style.TextBlock.KeyValue}"/>
+        </Grid>
+    </GroupBox>
+</UserControl>

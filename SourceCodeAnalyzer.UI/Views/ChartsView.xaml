@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="SourceCodeAnalyzer.UI.Views.ChartsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             mc:Ignorable="d" d:Background="White"
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <TabControl Margin="10">
+
+        <!-- Project File Distribution Pie Chart -->
+        <TabItem Header="Project File Distribution (Source + Config Files)" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <lvc:PieChart Series="{Binding ProjectFileDistributionSeries}" 
+                                 Height="400"
+                                 LegendLocation="Right"
+                                 InnerRadius="100"
+                                 DataTooltip="{x:Null}">
+                    <lvc:PieChart.ChartLegend>
+                        <lvc:DefaultLegend MaxHeight="200"/>
+                    </lvc:PieChart.ChartLegend>
+                </lvc:PieChart>
+                <TextBlock Grid.Row="1" Text="Shows relative size of projects by file count" 
+                               HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
+            </Grid>
+        </TabItem>
+
+        <!-- Project Line Type Composition -->
+        <TabItem Header="Project Line Type Composition">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <lvc:CartesianChart Series="{Binding ProjectLineTypeSeries}" 
+                                       Height="400">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Labels="{Binding ProjectLabels}" 
+                                     LabelsRotation="45"
+                                     Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Lines" LabelFormatter="{Binding Formatter}"/>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                <lvc:DefaultLegend Grid.Row="1"/>
+                <TextBlock Grid.Row="2" Text="Shows line type distribution per project" 
+                               HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
+            </Grid>
+        </TabItem>
+
+        <!-- Project Source Lines Trend -->
+        <TabItem Header="Project Source Lines Trend">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <lvc:CartesianChart Series="{Binding ProjectSourceLinesSeries}" Height="400">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Labels="{Binding ProjectLabels}" 
+                                  LabelsRotation="45"
+                                  Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Source Lines" LabelFormatter="{Binding LineFormatter}"/>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                <lvc:DefaultLegend Grid.Row="1"/>
+                <TextBlock Grid.Row="2" Text="Shows source code volume trend across projects" 
+                           HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
+            </Grid>
+        </TabItem>
+
+        <!-- File Type Details Chart -->
+        <TabItem Header="File Type Details">
+            <StackPanel Margin="10">
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Select File Type:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox Grid.Column="1" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center"
+                              ItemsSource="{Binding AvailableFileTypes}"
+                              SelectedItem="{Binding SelectedFileType}"/>
+                </Grid>
+
+                <lvc:CartesianChart Series="{Binding FileTypeDetailSeries}" 
+                                    Height="400"
+                                    Margin="0,10,0,0">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Labels="{Binding FileTypeDetailLabels}" 
+                                  LabelsRotation="45"
+                                  Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Lines Count" LabelFormatter="{Binding Formatter}"/>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.DataTooltip>
+                        <lvc:DefaultTooltip SelectionMode="SharedYValues"/>
+                    </lvc:CartesianChart.DataTooltip>
+                </lvc:CartesianChart>
+
+                <lvc:DefaultLegend/>
+                <TextBlock Text="Shows line composition for selected file type (top 20 files)" 
+                           HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
+            </StackPanel>
+        </TabItem>
+
+    </TabControl>
+</UserControl>

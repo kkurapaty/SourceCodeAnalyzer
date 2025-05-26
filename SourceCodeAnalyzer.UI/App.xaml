@@ -1,0 +1,17 @@
+﻿<Application x:Class="SourceCodeAnalyzer.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SourceCodeAnalyzer.UI"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Converters.xaml" />
+
+                <ResourceDictionary Source="/Styles/Generic.xaml" />
+                <ResourceDictionary Source="/Styles/DataGrid.Style.xaml" />
+                <ResourceDictionary Source="/Styles/TabControl.Style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

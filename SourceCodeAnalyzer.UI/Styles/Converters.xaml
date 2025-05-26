@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:SourceCodeAnalyzer.UI.Converters">
+
+    <converters:BooleanInverter x:Key="BooleanInverter" />
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+    <converters:NumberFormatConverter x:Key="NumberFormatConverter" />
+    <converters:TitleToColorConverter x:Key="TitleToColorConverter" />
+</ResourceDictionary>
