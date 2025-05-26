@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:conv="clr-namespace:SourceCodeAnalyzer.UI.Converters"
         xmlns:views="clr-namespace:SourceCodeAnalyzer.UI.Views"
-        mc:Ignorable="d"
+        mc:Ignorable="d" d:Background="White"
         Title="Source Code Analyzer" Height="600" Width="999">
 
     <Grid Margin="10">
@@ -19,16 +18,12 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <TextBox Text="{Binding FolderPath, UpdateSourceTrigger=PropertyChanged}" 
                      Width="400" Margin="4" VerticalContentAlignment="Center" />
-            <Button Content="Browse..." Command="{Binding BrowseCommand}" 
-                    Style="{StaticResource Style.Button.Browse}" />
-            <Button Content="Analyze" Command="{Binding AnalyzeCommand}" 
-                    Style="{StaticResource Style.Button.Analyze}"
+            <Button Content="Browse..." Command="{Binding BrowseCommand}" />
+            <Button Content="Analyze" Command="{Binding AnalyzeCommand}"
                     IsEnabled="{Binding IsAnalyzing, Converter={StaticResource BooleanInverter}}" />
             <Button Content="Cancel" Command="{Binding CancelCommand}" 
-                    Style="{StaticResource Style.Button.Cancel}"
                     Visibility="{Binding IsAnalyzing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <Button Content="About" Command="{Binding AboutCommand}"
-                    Style="{StaticResource Style.Button.About}"/>
+            <Button Content="About" Command="{Binding AboutCommand}"/>
         </StackPanel>
 
         <!-- Results -->
@@ -84,10 +79,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <!-- Status Bar -->
-            <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" Margin="4" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" Margin="4" VerticalAlignment="Center" />
             <!-- Progress -->
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
-                        Visibility="{Binding Path=Results.TotalFiles, Converter={StaticResource CountToVisibilityConverter}}">
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"
+                        Visibility="{Binding Path=IsAnalyzing, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding CurrentProgress}" Margin="4" />
                 <TextBlock Text="/" Margin="4" VerticalAlignment="Center" /> 
                 <TextBlock Text="{Binding TotalFiles, StringFormat={}{0} files}" Margin="4" />
@@ -100,7 +95,7 @@
 
             <StackPanel Grid.Column="3" Orientation="Vertical" Margin="5,0"
                         HorizontalAlignment="Right" VerticalAlignment="Center">
-                <TextBlock Margin="2,0" Text="Designed and Developed by" FontSize="9" Foreground="DarkGray"/>
+                <TextBlock Margin="2,0" Text="Developed by" FontSize="9" Foreground="DarkGray" HorizontalAlignment="Right"/>
                 <TextBlock Margin="2,-2,2,0" Text="Kiran Kurapaty" FontWeight="Bold" HorizontalAlignment="Right"/>
             </StackPanel>
             

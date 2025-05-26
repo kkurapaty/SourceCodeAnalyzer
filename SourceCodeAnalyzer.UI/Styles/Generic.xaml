@@ -5,59 +5,7 @@
 
 
 
-    <Style x:Key="Style.Button.Default" TargetType="{x:Type Button}">
-        <Setter Property="Padding" Value="8 4" />
-        <Setter Property="Margin" Value="4"/>
-        <Setter Property="Width" Value="75"/>
-        <Setter Property="Height" Value="25"/>
-        <Setter Property="Foreground" Value="Black" />
-        <Setter Property="BorderBrush" Value="Gray"/>
-        <Setter Property="FontFamily" Value="Segoe UI" />
-    </Style>
-
-    <Style x:Key="Style.Button.Browse" TargetType="{x:Type Button}" BasedOn="{StaticResource Style.Button.Default}">
-        <Setter Property="Background" Value="#FF99CCFF" />
-        <Setter Property="BorderBrush" Value="#FF6699CC" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF6699CC" />
-                <Setter Property="Foreground" Value="White" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="Style.Button.Analyze" TargetType="{x:Type Button}" BasedOn="{StaticResource Style.Button.Default}">
-        <Setter Property="Background" Value="#FF99FF99" />
-        <Setter Property="BorderBrush" Value="#FF66CC66" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF66CC66" />
-                <Setter Property="Foreground" Value="White" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="Style.Button.Cancel" TargetType="{x:Type Button}" BasedOn="{StaticResource Style.Button.Default}">
-        <Setter Property="Background" Value="#FFFF9999" />
-        <Setter Property="BorderBrush" Value="#FFCC6666" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FFCC6666" />
-                <Setter Property="Foreground" Value="White" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="Style.Button.About" TargetType="{x:Type Button}" BasedOn="{StaticResource Style.Button.Default}">
-        <Setter Property="Background" Value="#434343" />
-        <Setter Property="Foreground" Value="White" />
-        <Setter Property="BorderBrush" Value="#CCC" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="#FFCC6666" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
+    
 
     <Style TargetType="GroupBox">
         <Setter Property="Margin" Value="4" />

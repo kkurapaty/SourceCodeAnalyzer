@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="/Styles/Converters.xaml" />
 
                 <ResourceDictionary Source="/Styles/Generic.xaml" />
+                <ResourceDictionary Source="/Styles/Button.Style.xaml" />
                 <ResourceDictionary Source="/Styles/DataGrid.Style.xaml" />
                 <ResourceDictionary Source="/Styles/TabControl.Style.xaml" />
             </ResourceDictionary.MergedDictionaries>

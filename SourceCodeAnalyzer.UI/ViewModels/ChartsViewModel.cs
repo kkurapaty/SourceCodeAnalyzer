@@ -7,7 +7,6 @@ using SourceCodeAnalyzer.Core.Models;
 
 namespace SourceCodeAnalyzer.UI.ViewModels
 {
-
     public class ChartsViewModel : ViewModelBase
     {
         private AnalysisResults _results;
@@ -81,135 +80,183 @@ namespace SourceCodeAnalyzer.UI.ViewModels
         private void UpdateFileTypes()
         {
             if (Results?.SolutionSummaries == null) return;
-
-            // Populate available file types
-            AvailableFileTypes.Clear();
-            var fileTypes = Results.Files
-                .GroupBy(f => f.Type)
-                .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
-                .ToList();
-
-            foreach (var type in fileTypes)
+            IsBusy = true;
+            StatusMessage = "Updating file types...";
+            try
             {
-                AvailableFileTypes.Add(type);
+                // Populate available file types
+                AvailableFileTypes.Clear();
+                var fileTypes = Results.Files
+                    .GroupBy(f => f.Type)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => g.Key)
+                    .ToList();
+
+                foreach (var type in fileTypes)
+                {
+                    AvailableFileTypes.Add(type);
+                }
+
+                // Select first type by default
+                if (AvailableFileTypes.Any() && SelectedFileType == null)
+                {
+                    SelectedFileType = AvailableFileTypes.First();
+                }
             }
-
-            // Select first type by default
-            if (AvailableFileTypes.Any() && SelectedFileType == null)
+            finally
             {
-                SelectedFileType = AvailableFileTypes.First();
+                IsBusy = false;
+                StatusMessage = string.Empty;
             }
         }
         private void UpdateFileTypeDetailChart()
         {
             if (string.IsNullOrEmpty(SelectedFileType)) return;
-
-            FileTypeDetailSeries.Clear();
-            FileTypeDetailLabels.Clear();
-
-            var fileTypeData = Results.Files
-                .Where(f => f.Type == SelectedFileType)
-                .OrderByDescending(f => f.TotalLines)
-                .Take(20) // Limit to top 20 files for readability
-                .ToList();
-
-            if (!fileTypeData.Any()) return;
-
-            // Add series for each metric
-            FileTypeDetailSeries.Add(new StackedColumnSeries
+            IsBusy = true;
+            StatusMessage = $"Updating details for {SelectedFileType} files...";
+            try
             {
-                Title = "Source Lines",
-                Values = new ChartValues<int>(fileTypeData.Select(f => f.SourceLines)),
-                Fill = Brushes.SteelBlue
-            });
+                FileTypeDetailSeries.Clear();
+                FileTypeDetailLabels.Clear();
 
-            FileTypeDetailSeries.Add(new StackedColumnSeries
+                var fileTypeData = Results.Files
+                    .Where(f => f.Type == SelectedFileType)
+                    .OrderByDescending(f => f.TotalLines)
+                    .Take(20) // Limit to top 20 files for readability
+                    .ToList();
+
+                if (!fileTypeData.Any()) return;
+
+                // Add series for each metric
+                FileTypeDetailSeries.Add(new StackedColumnSeries
+                {
+                    Title = "Source Lines",
+                    Values = new ChartValues<int>(fileTypeData.Select(f => f.SourceLines)),
+                    Fill = Brushes.SteelBlue
+                });
+
+                FileTypeDetailSeries.Add(new StackedColumnSeries
+                {
+                    Title = "Comment Lines",
+                    Values = new ChartValues<int>(fileTypeData.Select(f => f.CommentLines)),
+                    Fill = Brushes.Goldenrod
+                });
+
+                FileTypeDetailSeries.Add(new StackedColumnSeries
+                {
+                    Title = "Blank Lines",
+                    Values = new ChartValues<int>(fileTypeData.Select(f => f.BlankLines)),
+                    Fill = Brushes.LightGray
+                });
+
+                // Set labels (file names)
+                FileTypeDetailLabels.AddRange(fileTypeData.Select(f =>
+                    $"{Path.GetFileName(f.Path)}\n({f.TotalLines} lines)"));
+
+                OnPropertyChanged(nameof(FileTypeDetailSeries));
+                OnPropertyChanged(nameof(FileTypeDetailLabels));
+            }
+            finally
             {
-                Title = "Comment Lines",
-                Values = new ChartValues<int>(fileTypeData.Select(f => f.CommentLines)),
-                Fill = Brushes.Goldenrod
-            });
-
-            FileTypeDetailSeries.Add(new StackedColumnSeries
-            {
-                Title = "Blank Lines",
-                Values = new ChartValues<int>(fileTypeData.Select(f => f.BlankLines)),
-                Fill = Brushes.LightGray
-            });
-
-            // Set labels (file names)
-            FileTypeDetailLabels.AddRange(fileTypeData.Select(f =>
-                $"{Path.GetFileName(f.Path)}\n({f.TotalLines} lines)"));
-
-            OnPropertyChanged(nameof(FileTypeDetailSeries));
-            OnPropertyChanged(nameof(FileTypeDetailLabels));
+                IsBusy = false;
+                StatusMessage = string.Empty;
+            }
         }
-        
+
         private void UpdateProjectFileDistributionChart(List<ProjectSummary> projects)
         {
             ProjectFileDistributionSeries.Clear();
-
-            foreach (var project in projects)
+            IsBusy = true;
+            StatusMessage = "Updating project file distribution...";
+            try
             {
-                ProjectFileDistributionSeries.Add(new PieSeries
+                foreach (var project in projects)
                 {
-                    Title = $"{project.Name} ({project.Type})",
-                    Values = new ChartValues<int> { project.SourceFiles + project.ConfigFiles },
-                    DataLabels = true,
-                    LabelPoint = point => $"{point.Y} ({point.Participation:P1})",
-                    Fill = GetProjectColor(project.Name)
-                });
+                    ProjectFileDistributionSeries.Add(new PieSeries
+                    {
+                        Title = $"{project.Name} ({project.Type})",
+                        Values = new ChartValues<int> { project.SourceFiles + project.ConfigFiles },
+                        DataLabels = true,
+                        LabelPoint = point => $"{point.Y} ({point.Participation:P1})",
+                        Fill = GetProjectColor(project.Name)
+                    });
+                }
+            }
+            finally
+            {
+                IsBusy = false;
+                StatusMessage = string.Empty;
             }
         }
 
         private void UpdateProjectLineTypeChart(List<ProjectSummary> projects)
         {
-            ProjectLineTypeSeries.Clear();
-            ProjectLabels.Clear();
-
-            // Add series for each line type
-            ProjectLineTypeSeries.Add(new StackedColumnSeries
+            IsBusy = true;
+            StatusMessage = "Updating project line types...";
+            try
             {
-                Title = "Source Lines",
-                Values = new ChartValues<int>(projects.Select(p => p.SourceLines)),
-                Fill = Brushes.SteelBlue
-            });
+                ProjectLineTypeSeries.Clear();
+                ProjectLabels.Clear();
 
-            ProjectLineTypeSeries.Add(new StackedColumnSeries
+                // Add series for each line type
+                ProjectLineTypeSeries.Add(new StackedColumnSeries
+                {
+                    Title = "Source Lines",
+                    Values = new ChartValues<int>(projects.Select(p => p.SourceLines)),
+                    Fill = Brushes.SteelBlue
+                });
+
+                ProjectLineTypeSeries.Add(new StackedColumnSeries
+                {
+                    Title = "Comment Lines",
+                    Values = new ChartValues<int>(projects.Select(p => p.CommentLines)),
+                    Fill = Brushes.Goldenrod
+                });
+
+                ProjectLineTypeSeries.Add(new StackedColumnSeries
+                {
+                    Title = "Blank Lines",
+                    Values = new ChartValues<int>(projects.Select(p => p.BlankLines)),
+                    Fill = Brushes.LightGray
+                });
+
+                // Set project labels
+                ProjectLabels.AddRange(projects.Select(p => $"{p.Name}\n({p.Type})"));
+            }
+            finally
             {
-                Title = "Comment Lines",
-                Values = new ChartValues<int>(projects.Select(p => p.CommentLines)),
-                Fill = Brushes.Goldenrod
-            });
-
-            ProjectLineTypeSeries.Add(new StackedColumnSeries
-            {
-                Title = "Blank Lines",
-                Values = new ChartValues<int>(projects.Select(p => p.BlankLines)),
-                Fill = Brushes.LightGray
-            });
-
-            // Set project labels
-            ProjectLabels.AddRange(projects.Select(p => $"{p.Name}\n({p.Type})"));
+                IsBusy = false;
+                StatusMessage = string.Empty;
+            }
+            
         }
 
         private void UpdateProjectSourceLinesChart(List<ProjectSummary> projects)
         {
-            ProjectSourceLinesSeries.Clear();
-
-            var lineSeries = new LineSeries
+            IsBusy = true;
+            StatusMessage = "Updating project source lines...";
+            try
             {
-                Title = "Source Lines",
-                Values = new ChartValues<int>(projects.Select(p => p.SourceLines)),
-                Fill = Brushes.Transparent,
-                Stroke = Brushes.SteelBlue,
-                PointGeometry = DefaultGeometries.Circle,
-                PointGeometrySize = 10,
-                PointForeground = Brushes.SteelBlue
-            };
+                ProjectSourceLinesSeries.Clear();
 
-            ProjectSourceLinesSeries.Add(lineSeries);
+                var lineSeries = new LineSeries
+                {
+                    Title = "Source Lines",
+                    Values = new ChartValues<int>(projects.Select(p => p.SourceLines)),
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.SteelBlue,
+                    PointGeometry = DefaultGeometries.Circle,
+                    PointGeometrySize = 10,
+                    PointForeground = Brushes.SteelBlue
+                };
+
+                ProjectSourceLinesSeries.Add(lineSeries);
+            }
+            finally
+            {
+                IsBusy = false;
+                StatusMessage = string.Empty;
+            }
         }
 
         private Brush GetProjectColor(string projectName)

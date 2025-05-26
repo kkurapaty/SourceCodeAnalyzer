@@ -58,7 +58,7 @@ public class SourceCodeAnalyzerService : ISourceCodeAnalyzer
         // Rust files
         { ".rs", new FileTypeInfo("Rust", "//", "/*", "*/") },
         // Images
-        { ".ico", new FileTypeInfo("Icons", null, null, null) },
+        { ".ico", new FileTypeInfo("Icon", null, null, null) },
         { ".jpg", new FileTypeInfo("Image", null, null, null) },
         { ".gif", new FileTypeInfo("Image", null, null, null) },
         { ".png", new FileTypeInfo("Image", null, null, null) },
@@ -131,18 +131,18 @@ public class SourceCodeAnalyzerService : ISourceCodeAnalyzer
             await progressReporter.ReportMessageAsync("Discovering files (excluding output directories)...", cancellationToken);
             var allFiles = await GetFilesAsync(folderPath, cancellationToken);
             await progressReporter.ReportMessageAsync($"Found {allFiles.Length} files after exclusion filters", cancellationToken);
-
+            await Task.Delay(500, cancellationToken);
             // Phase 2: Find solutions
             await progressReporter.ReportMessageAsync("Discovering solutions...", cancellationToken);
             results.Solutions = await FindSolutionsAsync(folderPath, cancellationToken);
             await progressReporter.ReportMessageAsync($"Found {results.Solutions.Count} solutions", cancellationToken);
-
+            await Task.Delay(500, cancellationToken);
             // Phase 3: Analyze files
             var fileAnalyses = new ConcurrentBag<FileAnalysis>();
             int processedFiles = 0;
             int totalFiles = allFiles.Length;
 
-            await progressReporter.ReportMessageAsync("Starting analysis...", cancellationToken);
+            await progressReporter.ReportMessageAsync("Analysis in progress...", cancellationToken);
 
             await Parallel.ForEachAsync(allFiles, new ParallelOptions
             {
@@ -355,138 +355,6 @@ public class SourceCodeAnalyzerService : ISourceCodeAnalyzer
 
             return analysis;
         }, cancellationToken);
-    }
-
-    private async Task<List<SolutionInfo>> FindSolutionsAsync1(string folderPath, CancellationToken cancellationToken)
-    {
-        var solutions = new List<SolutionInfo>();
-
-        foreach (var solutionPattern in _solutionFilePatterns)
-        {
-            // Check for cancellation before starting
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var solutionFiles = await GetFilesAsync(folderPath, solutionPattern, SearchOption.AllDirectories, cancellationToken);
-            foreach (var solutionFile in solutionFiles)
-            {
-                // Check for cancellation before starting
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var solution = new SolutionInfo
-                {
-                    Name = Path.GetFileNameWithoutExtension(solutionFile),
-                    Path = solutionFile,
-                    Projects = new List<ProjectInfo>()
-                };
-
-                // Find projects for this solution
-                foreach (var projectType in _projectFilePatterns)
-                {
-                    // Check for cancellation before starting
-                    cancellationToken.ThrowIfCancellationRequested();
-                    foreach (var projectPattern in projectType.Value)
-                    {
-                        // Use Path.GetDirectoryName to get the solution directory
-                        var solutionDirectory = Path.GetDirectoryName(solutionFile) ?? string.Empty;
-                        if (string.IsNullOrEmpty(solutionDirectory))
-                        {
-                            continue; // Skip if the directory is invalid
-                        }
-                        // Check for cancellation before starting
-                        cancellationToken.ThrowIfCancellationRequested();
-                        foreach (var projectFile in await GetFilesAsync(solutionDirectory, projectPattern, SearchOption.AllDirectories, cancellationToken))
-                        {
-                            solution.Projects.Add(new ProjectInfo
-                            {
-                                Name = Path.GetFileNameWithoutExtension(projectFile),
-                                Path = projectFile,
-                                Type = projectType.Key
-                            });
-                        }
-                    }
-                }
-
-                solutions.Add(solution);
-            }
-        }
-
-        return solutions;
-    }
-
-    private async Task<FileAnalysis> AnalyzeFileAsync1(string filePath, FileTypeInfo fileTypeInfo, CancellationToken cancellationToken)
-    {
-        var analysis = new FileAnalysis
-        {
-            Path = filePath,
-            Type = fileTypeInfo.LanguageName,
-            TotalLines = 0,
-            SourceLines = 0,
-            CommentLines = 0,
-            BlankLines = 0
-        };
-
-        bool inBlockComment = false;
-        string[] lines;
-
-        try
-        {
-            lines = await File.ReadAllLinesAsync(filePath, cancellationToken);
-        }
-        catch (Exception)
-        {
-            // Skip files that can't be read
-            return analysis;
-        }
-
-        analysis.TotalLines = lines.Length;
-
-        foreach (var line in lines)
-        {
-            // Check for cancellation before starting
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var trimmedLine = line.Trim();
-
-            // Check for blank lines
-            if (string.IsNullOrWhiteSpace(trimmedLine))
-            {
-                analysis.BlankLines++;
-                continue;
-            }
-
-            // Handle block comments
-            if (inBlockComment)
-            {
-                analysis.CommentLines++;
-                if (fileTypeInfo.BlockCommentEnd != null && trimmedLine.Contains(fileTypeInfo.BlockCommentEnd))
-                {
-                    inBlockComment = false;
-                }
-                continue;
-            }
-
-            if (fileTypeInfo.BlockCommentStart != null && trimmedLine.Contains(fileTypeInfo.BlockCommentStart))
-            {
-                analysis.CommentLines++;
-                if (fileTypeInfo.BlockCommentEnd != null && !trimmedLine.Contains(fileTypeInfo.BlockCommentEnd))
-                {
-                    inBlockComment = true;
-                }
-                continue;
-            }
-
-            // Check for single line comments
-            if (fileTypeInfo.LineComment != null && trimmedLine.StartsWith(fileTypeInfo.LineComment))
-            {
-                analysis.CommentLines++;
-                continue;
-            }
-
-            // If we got here, it's a source line
-            analysis.SourceLines++;
-        }
-
-        return analysis;
     }
 
     private async Task<int> CountLinesAsync(string filePath, CancellationToken cancellationToken)

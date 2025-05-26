@@ -58,9 +58,11 @@
 
     <!-- TabItem Style -->
     <Style x:Key="Style.TabItem.Flat" TargetType="{x:Type TabItem}">
-        <Setter Property="Foreground" Value="{StaticResource TabItem.Foreground}"/>
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+        <!-- Foreground is for the content, not the header -->
+        <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabControl}}, Path=(TextElement.Foreground)}" />
         <Setter Property="Padding" Value="12,8"/>
-        <Setter Property="Background" Value="{StaticResource TabItem.Static.Background}"/>
         <Setter Property="BorderBrush" Value="{StaticResource TabItem.Static.Border}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -68,13 +70,40 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="SelectHorizontalTabItem">
+                            <DoubleAnimation Storyboard.TargetName="ScaleTransform"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         From="0" To="1" Duration="0" />
+                            <DoubleAnimation Storyboard.TargetName="ScaleTransform"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         From="0" To="1" Duration="0:0:0.3">
+                                <DoubleAnimation.EasingFunction>
+                                    <SineEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+
+                        </Storyboard>
+                        <Storyboard x:Key="SelectVerticalTabItem">
+                            <DoubleAnimation Storyboard.TargetName="ScaleTransform"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         From="0" To="1" Duration="0" />
+                            <DoubleAnimation Storyboard.TargetName="ScaleTransform"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         From="0" To="1" Duration="0:0:0.3">
+                                <DoubleAnimation.EasingFunction>
+                                    <SineEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
                     <Grid>
                         <Border x:Name="Bd"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter x:Name="Content" 
+                            <ContentPresenter x:Name="contentPresenter" 
                                               ContentSource="Header" TextElement.Foreground="Black"
                                               HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                               VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
@@ -82,71 +111,75 @@
                         </Border>
 
                         <!-- Underline indicator -->
-                        <Border x:Name="Underline" Margin="2,0" Height="2" VerticalAlignment="Bottom" Background="Transparent" Width="0">
+                        <Border x:Name="Underline" Margin="2,0" 
+                                BorderThickness="0,0,0,2"
+                                BorderBrush="{StaticResource UnderlineBrush}"
+                                RenderTransformOrigin="0.5,0.5" Visibility="Hidden">
                             <Border.RenderTransform>
-                                <ScaleTransform ScaleX="0" />
+                                <ScaleTransform x:Name="ScaleTransform" ScaleX="0" ScaleY="0" />
                             </Border.RenderTransform>
-                            <Border.Triggers>
-                                <!-- Selected state animation -->
-                                <EventTrigger RoutedEvent="Selector.Selected">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="Background.Color"
-                                                            To="{StaticResource UnderlineBrush.Color}"
-                                                            Duration="0:0:0.2"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                                <!-- Unselected state animation -->
-                                <EventTrigger RoutedEvent="Selector.Unselected">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="Background.Color"
-                                                            To="Transparent"
-                                                            Duration="0:0:0.2"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-
-                                <EventTrigger RoutedEvent="Selector.MouseEnter">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="Background.Color"
-                                                            To="{StaticResource UnderlineHover.Color}"
-                                                            Duration="0:0:0.2"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </Border.Triggers>
                         </Border>
                     </Grid>
 
                     <ControlTemplate.Triggers>
-                        <!-- MouseOver trigger -->
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Foreground" Value="{StaticResource TabItem.Selected.Foreground}"/>
-                            <Setter TargetName="Underline" Property="Background" Value="{StaticResource UnderlineHoverBrush}"/>
-                            <Setter TargetName="Underline" Property="Opacity" Value="0.5"/>
-                            <Setter TargetName="Underline" Property="Width" Value="Auto" />
-                            <Setter TargetName="Underline" Property="RenderTransform">
-                                <Setter.Value>
-                                    <ScaleTransform ScaleX="1" />
-                                </Setter.Value>
-                            </Setter>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.38" />
                         </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Underline" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="contentPresenter" Property="Opacity" Value="1" />
+                           <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource SelectHorizontalTabItem}"/>
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom">
+                            <Setter TargetName="Underline" Property="BorderThickness" Value="0,2,0,0" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left">
+                            <Setter TargetName="Underline" Property="BorderThickness" Value="0,0,2,0" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right">
+                            <Setter TargetName="Underline" Property="BorderThickness" Value="2,0,0,0" />
+                        </DataTrigger>
 
-                        <!-- Selected trigger -->
-                        <Trigger Property="IsSelected" Value="true">
-                            <Setter Property="Foreground" Value="{StaticResource TabItem.Selected.Foreground}"/>
-                            <Setter TargetName="Underline" Property="Background" Value="{StaticResource UnderlineBrush}"/>
-                            <Setter TargetName="Underline" Property="Opacity" Value="1.0"/>
-                            <Setter TargetName="Underline" Property="Width" Value="Auto" />
-                            <Setter TargetName="Underline" Property="RenderTransform" >
-                                <Setter.Value>
-                                    <ScaleTransform ScaleX="1" />
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
+                        <!-- Selected TabItem animations (vary depending on TabControl.TabStripPlacement value) -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsSelected}" Value="True" />
+                                <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource SelectHorizontalTabItem}" />
+                            </MultiDataTrigger.EnterActions>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsSelected}" Value="True" />
+                                <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource SelectHorizontalTabItem}" />
+                            </MultiDataTrigger.EnterActions>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsSelected}" Value="True" />
+                                <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource SelectVerticalTabItem}" />
+                            </MultiDataTrigger.EnterActions>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsSelected}" Value="True" />
+                                <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource SelectVerticalTabItem}" />
+                            </MultiDataTrigger.EnterActions>
+                        </MultiDataTrigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -16,15 +16,17 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <lvc:PieChart Series="{Binding ProjectFileDistributionSeries}" 
+                <ScrollViewer Grid.Row="0">
+                    <lvc:PieChart Series="{Binding ProjectFileDistributionSeries}" 
                                  Height="400"
                                  LegendLocation="Right"
                                  InnerRadius="100"
                                  DataTooltip="{x:Null}">
-                    <lvc:PieChart.ChartLegend>
-                        <lvc:DefaultLegend MaxHeight="200"/>
-                    </lvc:PieChart.ChartLegend>
-                </lvc:PieChart>
+                        <lvc:PieChart.ChartLegend>
+                            <lvc:DefaultLegend MaxHeight="200"/>
+                        </lvc:PieChart.ChartLegend>
+                    </lvc:PieChart>
+                </ScrollViewer>
                 <TextBlock Grid.Row="1" Text="Shows relative size of projects by file count" 
                                HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
             </Grid>
@@ -38,17 +40,19 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <lvc:CartesianChart Series="{Binding ProjectLineTypeSeries}" 
+                <ScrollViewer Grid.Row="0">
+                    <lvc:CartesianChart Series="{Binding ProjectLineTypeSeries}" 
                                        Height="400">
-                    <lvc:CartesianChart.AxisX>
-                        <lvc:Axis Labels="{Binding ProjectLabels}" 
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Labels="{Binding ProjectLabels}" 
                                      LabelsRotation="45"
                                      Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
-                    </lvc:CartesianChart.AxisX>
-                    <lvc:CartesianChart.AxisY>
-                        <lvc:Axis Title="Lines" LabelFormatter="{Binding Formatter}"/>
-                    </lvc:CartesianChart.AxisY>
-                </lvc:CartesianChart>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Lines" LabelFormatter="{Binding Formatter}"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </ScrollViewer>
                 <lvc:DefaultLegend Grid.Row="1"/>
                 <TextBlock Grid.Row="2" Text="Shows line type distribution per project" 
                                HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
@@ -63,16 +67,18 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <lvc:CartesianChart Series="{Binding ProjectSourceLinesSeries}" Height="400">
-                    <lvc:CartesianChart.AxisX>
-                        <lvc:Axis Labels="{Binding ProjectLabels}" 
+                <ScrollViewer Grid.Row="0">
+                    <lvc:CartesianChart Series="{Binding ProjectSourceLinesSeries}" Height="400">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Labels="{Binding ProjectLabels}" 
                                   LabelsRotation="45"
                                   Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
-                    </lvc:CartesianChart.AxisX>
-                    <lvc:CartesianChart.AxisY>
-                        <lvc:Axis Title="Source Lines" LabelFormatter="{Binding LineFormatter}"/>
-                    </lvc:CartesianChart.AxisY>
-                </lvc:CartesianChart>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Source Lines" LabelFormatter="{Binding LineFormatter}"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </ScrollViewer>
                 <lvc:DefaultLegend Grid.Row="1"/>
                 <TextBlock Grid.Row="2" Text="Shows source code volume trend across projects" 
                            HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>
@@ -92,23 +98,23 @@
                               ItemsSource="{Binding AvailableFileTypes}"
                               SelectedItem="{Binding SelectedFileType}"/>
                 </Grid>
-
-                <lvc:CartesianChart Series="{Binding FileTypeDetailSeries}" 
+                <ScrollViewer>
+                    <lvc:CartesianChart Series="{Binding FileTypeDetailSeries}" 
                                     Height="400"
                                     Margin="0,10,0,0">
-                    <lvc:CartesianChart.AxisX>
-                        <lvc:Axis Labels="{Binding FileTypeDetailLabels}" 
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Labels="{Binding FileTypeDetailLabels}" 
                                   LabelsRotation="45"
                                   Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
-                    </lvc:CartesianChart.AxisX>
-                    <lvc:CartesianChart.AxisY>
-                        <lvc:Axis Title="Lines Count" LabelFormatter="{Binding Formatter}"/>
-                    </lvc:CartesianChart.AxisY>
-                    <lvc:CartesianChart.DataTooltip>
-                        <lvc:DefaultTooltip SelectionMode="SharedYValues"/>
-                    </lvc:CartesianChart.DataTooltip>
-                </lvc:CartesianChart>
-
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Lines Count" LabelFormatter="{Binding Formatter}"/>
+                        </lvc:CartesianChart.AxisY>
+                        <lvc:CartesianChart.DataTooltip>
+                            <lvc:DefaultTooltip SelectionMode="SharedYValues"/>
+                        </lvc:CartesianChart.DataTooltip>
+                    </lvc:CartesianChart>
+                </ScrollViewer>
                 <lvc:DefaultLegend/>
                 <TextBlock Text="Shows line composition for selected file type (top 20 files)" 
                            HorizontalAlignment="Center" FontStyle="Italic" Margin="5"/>

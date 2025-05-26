@@ -32,7 +32,7 @@ public class MainViewModel : ViewModelBase, IProgressReporter
         BrowseCommand = new RelayCommand(BrowseFolder);
         AnalyzeCommand = new RelayCommand(async () => await AnalyzeFolderAsync(), CanAnalyze);
         CancelCommand = new RelayCommand(CancelAnalysis, () => IsAnalyzing && !IsCancellationRequested);
-        AboutCommand = new RelayCommand(() => MessageBox.Show("Source Code Analyzer v1.0\nDeveloped by Kiran Kurapaty\nkkurapaty@outlook.com", "About", MessageBoxButton.OK, MessageBoxImage.Information));
+        AboutCommand = new RelayCommand(() => MessageBox.Show("Source Code Analyzer v1.0\n\nDeveloped by Kiran Kurapaty\n\nkkurapaty@outlook.com", "About", MessageBoxButton.OK, MessageBoxImage.Information));
     }
     #endregion
 
